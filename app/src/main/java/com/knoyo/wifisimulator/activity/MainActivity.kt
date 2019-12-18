@@ -4,13 +4,13 @@ import android.content.Context
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.knoyo.wifisimulator.R
 import com.knoyo.wifisimulator.receiver.WifiStateReceiver
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.widget.Toast
 import com.knoyo.wifisimulator.preferences.WifiInfoPrefs
 import com.knoyo.wifisimulator.xposed.util.XposedUtil

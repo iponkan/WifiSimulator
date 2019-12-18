@@ -1,20 +1,24 @@
 package com.knoyo.wifisimulator.xposed.hook;
 
-import de.robv.android.xposed.*;
-import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.SupplicantState;
 import android.net.DhcpInfo;
+import android.net.NetworkInfo;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
-import java.net.NetworkInterface;
+
 import java.net.InetAddress;
-import java.util.*;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodHook.MethodHookParam;
+import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 
 public class FakeWifiConnection

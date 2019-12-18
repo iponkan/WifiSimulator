@@ -1,8 +1,7 @@
 package com.knoyo.wifisimulator.activity
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +10,11 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.knoyo.wifisimulator.R
 import com.knoyo.wifisimulator.bean.AppInfo
 import com.knoyo.wifisimulator.preferences.WifiInfoPrefs
 import com.knoyo.wifisimulator.util.AppsUtil
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_app_list.*
 
 
@@ -29,7 +28,7 @@ import kotlinx.android.synthetic.main.activity_app_list.*
  * @update_time
  * @version V1.0
  * @exception
-*/
+ */
 class AppListActivity : AppCompatActivity() {
 
     // WIFI信息配置文件
@@ -62,10 +61,10 @@ class AppListActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     private fun init() {
         // 初始化WIFI信息配置
-        wifiInfoPrefs =  WifiInfoPrefs(this)
+        wifiInfoPrefs = WifiInfoPrefs(this)
         // 获取所有应用信息
         appsInfoMap = appUtil.getAllAppsInfo()
         // 同步模拟应用
@@ -81,7 +80,7 @@ class AppListActivity : AppCompatActivity() {
                 // 缓存视图容器
                 var convertView = p1
                 // 缓存应用条目视图容器
-                val appItemViewHolder:AppItemViewHolder
+                val appItemViewHolder: AppItemViewHolder
                 // 设置(获取)视图加载器
                 if (convertView == null) {
                     // 加载布局
@@ -147,7 +146,7 @@ class AppListActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     private fun syncSimulationApps() {
         // 获取配置中应用列表
         val simulationAppList = gson.fromJson<ArrayList<String>>(wifiInfoPrefs.apps, object : TypeToken<ArrayList<String>>() {}.type)
@@ -171,7 +170,7 @@ class AppListActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     fun updateSimulationApps() {
         // 缓存模拟应用列表
         val simulationAppList = arrayListOf<String>()
@@ -198,15 +197,15 @@ class AppListActivity : AppCompatActivity() {
  * @param
  * @return
  * @throws
-*/
+ */
 private fun <K, V> HashMap<K, V>.indexOf(p0: Int): V? {
     var indexTmp = 0
-    var vTmp:V? = null
+    var vTmp: V? = null
     this.forEach { _, v ->
         if (p0 == indexTmp) {
             vTmp = v
         }
-        indexTmp ++
+        indexTmp++
     }
     return vTmp
 }
@@ -221,7 +220,7 @@ private fun <K, V> HashMap<K, V>.indexOf(p0: Int): V? {
  * @update_time
  * @version V1.0
  * @exception
-*/
+ */
 class AppItemViewHolder {
     lateinit var icon: ImageView
     lateinit var name: TextView
