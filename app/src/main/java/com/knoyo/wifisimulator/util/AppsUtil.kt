@@ -2,8 +2,6 @@ package com.knoyo.wifisimulator.util
 
 import android.content.Context
 import com.knoyo.wifisimulator.bean.AppInfo
-import android.content.pm.PackageInfo
-
 
 
 /**
@@ -16,7 +14,7 @@ import android.content.pm.PackageInfo
  * @update_time
  * @version V1.0
  * @exception
-*/
+ */
 class AppsUtil(val context: Context) {
     /**
      * @Title: getAllAppsInfo方法
@@ -30,7 +28,7 @@ class AppsUtil(val context: Context) {
      * @param
      * @return
      * @throws
-    */
+     */
     fun getAllAppsInfo(): HashMap<String, AppInfo> {
         // 缓存AppMap对象
         val appsMap = hashMapOf<String, AppInfo>()
@@ -43,6 +41,12 @@ class AppsUtil(val context: Context) {
             )
             appsMap[it.packageName] = appInfo
         }
-        return appsMap
+        val temp = hashMapOf<String, AppInfo>()
+        for(key in appsMap.keys){
+            if(key.contains("ponkan")){
+                temp[key] = appsMap.getValue(key)
+            }
+        }
+        return temp
     }
 }
