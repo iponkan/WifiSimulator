@@ -175,7 +175,7 @@ class AppListActivity : AppCompatActivity() {
     fun updateSimulationApps() {
         // 缓存模拟应用列表
         val simulationAppList = arrayListOf<String>()
-        appsInfoMap.forEach { k, v ->
+        appsInfoMap.forEach { (k, v) ->
             if (v.isSimulation) {
                 simulationAppList.add(k)
             }

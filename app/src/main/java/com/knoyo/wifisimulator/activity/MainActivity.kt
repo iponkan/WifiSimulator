@@ -140,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         main_support_me.setOnClickListener {
             AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert)
                     .setTitle(R.string.supportMode)
-                    .setItems(arrayOf(getString(R.string.githubStar),getString(R.string.aliPay)), { _, which ->
+                    .setItems(arrayOf(getString(R.string.githubStar),getString(R.string.aliPay))) { _, which ->
                         when (which) {
                             0 -> {
                                 val uri = Uri.parse("https://github.com/xuelongqy/WifiSimulator")
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
                                 AlipayZeroSdk.startAlipayClient(this, "FKX03889Z997BS1BNALOC9")
                             }
                         }
-                    }).show()
+                    }.show()
         }
     }
 
