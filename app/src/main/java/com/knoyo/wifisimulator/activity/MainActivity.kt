@@ -1,21 +1,24 @@
 package com.knoyo.wifisimulator.activity
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.net.wifi.WifiManager
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.knoyo.wifisimulator.R
-import com.knoyo.wifisimulator.receiver.WifiStateReceiver
-import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AlertDialog
+import android.net.wifi.WifiManager
+import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.knoyo.wifisimulator.R
 import com.knoyo.wifisimulator.preferences.WifiInfoPrefs
+import com.knoyo.wifisimulator.receiver.WifiStateReceiver
+import com.knoyo.wifisimulator.util.ToastUtil
 import com.knoyo.wifisimulator.xposed.util.XposedUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import moe.feng.alipay.zerosdk.AlipayZeroSdk
+import ru.alexbykov.nopermission.PermissionHelper
 
 
 /**
@@ -28,7 +31,7 @@ import moe.feng.alipay.zerosdk.AlipayZeroSdk
  * @update_time
  * @version V1.0
  * @exception
-*/
+ */
 class MainActivity : AppCompatActivity() {
 
     // WIFI信息配置文件
@@ -37,16 +40,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wifiStateReceiver: WifiStateReceiver
     // WIFI状态监听器
     private lateinit var wifiStateChangeListener: WifiStateReceiver.WifiStateChangeListener
+    private lateinit var permissionHelper: PermissionHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        // 初始化
-        init()
-        // 更新模拟信息
-        updateSimulatorInfo()
-        // 注册WIFI广播接收器
-        registerWifiStateReceiver()
+        permissionHelper = PermissionHelper(this)
+        permissionHelper.check(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                .onSuccess {
+                    init()
+                }
+                .onDenied {
+                    ToastUtil.showToastShort(this, "权限被拒绝，9.0及以上系统无法获取WIFI正确信息")
+                    init()
+                }
+                .onNeverAskAgain {
+                    ToastUtil.showToastShort(this, "权限被拒绝，9.0及以上系统无法获取WIFI正确信息,下次不会在询问了")
+                    init()
+                }
+                .run()
     }
 
     override fun onDestroy() {
@@ -67,10 +79,10 @@ class MainActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     private fun init() {
         // 初始化WIFI信息配置
-        wifiInfoPrefs =  WifiInfoPrefs(this)
+        wifiInfoPrefs = WifiInfoPrefs(this)
         // 初始化WIFI状态监听器
         wifiStateChangeListener = object : WifiStateReceiver.WifiStateChangeListenerImpl() {
             // WIFI断开
@@ -81,12 +93,13 @@ class MainActivity : AppCompatActivity() {
                 main_now_wifi_bssid.text = ""
                 main_now_wifi_ip.text = ""
             }
+
             // WIFI连接成功
             override fun onConnected() {
                 val wifiInfo = (this@MainActivity.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager).connectionInfo
                 // 设置WIFI信息
                 main_now_wifi_connect_status.text = this@MainActivity.getString(R.string.yes)
-                main_now_wifi_name.text = wifiInfo.ssid.replace("\"","")
+                main_now_wifi_name.text = wifiInfo.ssid.replace("\"", "")
                 main_now_wifi_bssid.text = wifiInfo.bssid
                 main_now_wifi_ip.text = wifiInfo.ipAddress.toString()
             }
@@ -119,10 +132,10 @@ class MainActivity : AppCompatActivity() {
                 // 检验Xposed是否激活
                 if (XposedUtil.isXposedActive()) {
                     Toast.makeText(this@MainActivity, this@MainActivity.getString(R.string.successfulSimulation), Toast.LENGTH_LONG).show()
-                }else {
+                } else {
                     Toast.makeText(this@MainActivity, this@MainActivity.getString(R.string.toActiveXposed), Toast.LENGTH_LONG).show()
                 }
-            }else {
+            } else {
                 Toast.makeText(this@MainActivity, this@MainActivity.getString(R.string.failureSimulation), Toast.LENGTH_LONG).show()
             }
         }
@@ -140,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         main_support_me.setOnClickListener {
             AlertDialog.Builder(this, R.style.Theme_AppCompat_DayNight_Dialog_Alert)
                     .setTitle(R.string.supportMode)
-                    .setItems(arrayOf(getString(R.string.githubStar),getString(R.string.aliPay))) { _, which ->
+                    .setItems(arrayOf(getString(R.string.githubStar), getString(R.string.aliPay))) { _, which ->
                         when (which) {
                             0 -> {
                                 val uri = Uri.parse("https://github.com/xuelongqy/WifiSimulator")
@@ -157,8 +170,12 @@ class MainActivity : AppCompatActivity() {
                         }
                     }.show()
         }
-    }
 
+        // 更新模拟信息
+        updateSimulatorInfo()
+        // 注册WIFI广播接收器
+        registerWifiStateReceiver()
+    }
 
 
     /**
@@ -173,7 +190,7 @@ class MainActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     private fun registerWifiStateReceiver() {
         // 判断WIFI广播接收器是否注册过
         val mFilter = IntentFilter()
@@ -183,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         mFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION) //是不是正在获得IP地址
         mFilter.addAction(WifiManager.NETWORK_IDS_CHANGED_ACTION)
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
-        this.registerReceiver(wifiStateReceiver,mFilter)
+        this.registerReceiver(wifiStateReceiver, mFilter)
     }
 
     /**
@@ -198,7 +215,7 @@ class MainActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     private fun unRegisterWifiStateReceiver() {
         this.unregisterReceiver(wifiStateReceiver)
     }
@@ -215,23 +232,27 @@ class MainActivity : AppCompatActivity() {
      * @param
      * @return
      * @throws
-    */
+     */
     private fun updateSimulatorInfo() {
         // 获取Xposed激活状态
         if (XposedUtil.isXposedActive()) {
             main_simulator_active.text = getString(R.string.yes)
-        }else {
+        } else {
             main_simulator_active.text = getString(R.string.no)
         }
         // 获取模拟状态
         if (wifiInfoPrefs.isSimulation) {
             main_simulator_status.text = getString(R.string.yes)
-        }else {
+        } else {
             main_simulator_status.text = getString(R.string.no)
         }
         // 获取配置中信息
         main_simulator_wifi_name.text = wifiInfoPrefs.wifiName
         main_simulator_wifi_bssid.text = wifiInfoPrefs.wifiBssid
         main_simulator_wifi_ip.text = wifiInfoPrefs.wifiIP.toString()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        permissionHelper.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }
